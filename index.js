@@ -51,14 +51,12 @@ function Pokemon (_dados) {
   function habilidades () { return new HabilidadesPokemon(_dados.abilities) }
   function toString () {
     return `Pokemon: ${nome()}
-Tipos:
-  ${tipos()}
-Habilidades:
-  ${habilidades()}`
+  Tipos:
+    ${tipos()}
+  Habilidades:
+    ${habilidades()}`
   }
-  function salvarCom (armazem) {
-    return armazem.salvar(_dados)
-  }
+  function salvarCom (armazem) { return armazem.salvar(_dados) }
   return {nome,tipos,habilidades,toString,salvarCom}
 }
 function TiposPokemon (_dados) {
@@ -124,8 +122,7 @@ function ConsolePokemon () {
   }
   async function pokemon (nome) {
     console.log('Pesquisar pokemón:')
-    var noCache = armaz.contem(nome)
-    if (noCache) {
+    if (armaz.contem(nome)) {
       console.log('Está salvo, recuperando do cache...')
       var p = armaz.recuperarPokemon(nome)
     } else {
@@ -133,9 +130,12 @@ function ConsolePokemon () {
     }
     if (!p) { console.log('Não consegui carregar o pokemón, tente de novo'); return }
     console.log( p.toString() )
-    if (!noCache) {
+    talvezSalvar(p)
+  }
+  function talvezSalvar (pokemon) {
+    if (!armaz.contem(pokemon.nome())) {
       if (!rs.keyInYNStrict('Salvar?',{guide:true})) {return}
-      var salvo = p.salvarCom(armaz)
+      var salvo = pokemon.salvarCom(armaz)
       console.log( (salvo ? 'Salvo' : 'Não foi possível salvar') )
     }
   }
