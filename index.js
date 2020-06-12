@@ -14,7 +14,7 @@ function FontePokemonAxios (_nomePokemon) {
   }
   return {pokemon}
 }
-function ArmazemArquivosJSON (_caminho) {
+function ArmazemPokemonsJSON (_caminho) {
   fs.mkdirSync(_caminho, {recursive:true})
   function jsonPokemon (nome) { return path.join(_caminho, nome+'.json') }
   function contem (nome) { return fs.existsSync(jsonPokemon(nome)) }
@@ -44,7 +44,7 @@ function ArmazemArquivosJSON (_caminho) {
       return false
     }
   }
-  return {contem,listar,recuperarPokemon,salvar,apagar}
+  return {contem,listar,salvar,apagar,recuperarPokemon}
 }
 function FonteTipoPokemonAxios (_dados) {
   async function tipo () {
@@ -134,7 +134,7 @@ function HabilidadePokemon (_dados) {
 }
 // Interface:
 function ConsolePokemon () {
-  var armaz = new ArmazemArquivosJSON('./.pokemons')
+  var armaz = new ArmazemPokemonsJSON('./.pokemons')
   // Principais:
   function prompt () {
     return 'pokeapi> '
