@@ -3,10 +3,10 @@ const rs = require('readline-sync')
 const fs = require('fs')
 const path = require('path')
 // Fontes:
-function FontePokemonAxios (_nomePokemon) {
+function FontePokemonAxios (_nome) {
   async function pokemon () {
     try {
-      var r = await axios.get(`https://pokeapi.co/api/v2/pokemon/${_nomePokemon}`)
+      var r = await axios.get(`https://pokeapi.co/api/v2/pokemon/${_nome}`)
       return new Pokemon(r.data)
     } catch (e) {
       return false
@@ -19,10 +19,10 @@ function ArmazemPokemonsJSON (_caminho) {
   function jsonPokemon (nome) { return path.join(_caminho, nome+'.json') }
   function contem (nome) { return fs.existsSync(jsonPokemon(nome)) }
   function listar () { return fs.readdirSync(_caminho).map( (f) => f.split('.json')[0] ) }
-  function salvar (dadosPokemon) {
+  function salvar (dados) {
     try {
-      var nome = dadosPokemon.name
-      var j = JSON.stringify(dadosPokemon)
+      var nome = dados.name
+      var j = JSON.stringify(dados)
       fs.writeFileSync(jsonPokemon(nome), j)
       return true
     } catch (e) {
