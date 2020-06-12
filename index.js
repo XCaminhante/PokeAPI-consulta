@@ -2,6 +2,7 @@ const axios = require('axios')
 const rs = require('readline-sync')
 const fs = require('fs')
 const path = require('path')
+// Fontes:
 function FontePokemonAxios (_nomePokemon) {
   async function pokemon () {
     try {
@@ -45,6 +46,64 @@ function ArmazemArquivosJSON (_caminho) {
   }
   return {contem,listar,recuperarPokemon,salvar,apagar}
 }
+function FonteTipoPokemonAxios (_dados) {
+  async function tipo () {
+    try {
+      var nome = _dados.name
+      var r = await axios.get(`https://pokeapi.co/api/v2/type/${nome}`)
+      Object.assign(_dados,r.data)
+      return new TipoPokemon(_dados)
+    } catch (e) {
+      return false
+    }
+  }
+  return {tipo}
+}
+function FonteHabilidadePokemonAxios (_dados) {
+  async function habilidade () {
+    try {
+      var nome = _dados.name
+      var r = await axios.get(`https://pokeapi.co/api/v2/ability/${nome}`)
+      Object.assign(_dados,r.data)
+      return new HabilidadePokemon(_dados)
+    } catch (e) {
+      return false
+    }
+  }
+  return {habilidade}
+}
+// Coleções:
+function TiposPokemon (_dados) {
+  function nomes () { return _dados.map( (t) => t.type.name ) }
+  async function tipo (nome) {
+    var dadosTipo = _dados.filter( (t) => t.type.name == nome )
+    if (!dadosTipo.length) { return false }
+    if (!dadosTipo[0].type.id) { return new FonteTipoPokemonAxios(dadosTipo[0].type).tipo() }
+    return new TipoPokemon(dadosTipo[0].type)
+  }
+  function toString () { return nomes().join(', ') }
+  return {nomes,tipo,toString}
+}
+function HabilidadesPokemon (_dados) {
+  function nomes () { return _dados.map( (t) => t.ability.name ) }
+  function habilidade (nome) {
+    var dadosHab = _dados.filter( (h) => h.ability.name == nome )
+    if (!dadosHab.length) { return false }
+    if (!dadosHab[0].ability.id) { return new FonteHabilidadePokemonAxios(dadosHab[0].ability).habilidade() }
+    return new HabilidadePokemon(dadosHab[0].ability)
+  }
+  function toString () { return nomes().join(', ') }
+  return {nomes,toString}
+}
+function RelacoesDanosPokemon (_dados) {
+  function semDanoPara () {}
+  function meioDanoPara () {}
+  function duploDanoPara () {}
+  function semDanoDe () {}
+  function meioDanoDe () {}
+  function duploDanoDe () {}
+}
+// Entidades:
 function Pokemon (_dados) {
   function nome () { return _dados.name }
   function tipos () { return new TiposPokemon(_dados.types) }
@@ -59,26 +118,24 @@ function Pokemon (_dados) {
   function salvarCom (armazem) { return armazem.salvar(_dados) }
   return {nome,tipos,habilidades,toString,salvarCom}
 }
-function TiposPokemon (_dados) {
-  function nomes () {
-    return _dados.map( (t) => t.type.name )
-  }
-  function toString () {
-    return nomes().join(', ')
-  }
-  return {nomes,toString}
+function TipoPokemon (_dados) {
+  function nome () { return _dados.name }
+  function relacoesDanos () { return new RelacoesDanosPokemon(_dados.damage_relations) }
+  function nomesPokemonsDesteTipo () { return _dados.pokemon.map( (p) => p.pokemon.name ) }
+  function toString () { return nome() }
+  return {nome,relacoesDanos,nomesPokemonsDesteTipo,toString}
 }
-function HabilidadesPokemon (_dados) {
-  function nomes () {
-    return _dados.map( (t) => t.ability.name )
-  }
-  function toString () {
-    return nomes().join(', ')
-  }
-  return {nomes,toString}
+function HabilidadePokemon (_dados) {
+  function nome () { return _dados.name }
+  function selecEmIngles (recursos) { return recursos.filter( (r) => r.language.name == 'en' )[0] }
+  function descricao () { return selecEmIngles(_dados.effect_entries).effect }
+  function descricaoCurta () { return selecEmIngles(_dados.effect_entries).short_effect }
+  return {nome,descricao,descricaoCurta}
 }
+// Interface:
 function ConsolePokemon () {
   var armaz = new ArmazemArquivosJSON('./.pokemons')
+  // Principais:
   function prompt () {
     return 'pokeapi> '
   }
@@ -120,6 +177,7 @@ function ConsolePokemon () {
       }
     }
   }
+  // Comandos:
   async function pokemon (nome) {
     console.log('Pesquisar pokemón:')
     if (armaz.contem(nome)) {
@@ -131,13 +189,6 @@ function ConsolePokemon () {
     if (!p) { console.log('Não consegui carregar o pokemón, tente de novo'); return }
     console.log( p.toString() )
     talvezSalvar(p)
-  }
-  function talvezSalvar (pokemon) {
-    if (!armaz.contem(pokemon.nome())) {
-      if (!rs.keyInYNStrict('Salvar?',{guide:true})) {return}
-      var salvo = pokemon.salvarCom(armaz)
-      console.log( (salvo ? 'Salvo' : 'Não foi possível salvar') )
-    }
   }
   async function listar () {
     var lista = armaz.listar()
@@ -151,6 +202,17 @@ function ConsolePokemon () {
     if (!lista.length) { console.log('Nenhum pokemón salvo'); return }
     console.log('Remover pokemón:')
     console.log( ( armaz.apagar(nome) ? 'Feito' : 'Houve um problema' ) )
+  }
+  // Auxiliares:
+  function descreverHabilidades (pokemon) {}
+  function relacoesDano (pokemon) {}
+  function exemplosTipo (tipo) {}
+  function talvezSalvar (pokemon) {
+    if (!armaz.contem(pokemon.nome())) {
+      if (!rs.keyInYNStrict('Salvar?',{guide:true})) {return}
+      var salvo = pokemon.salvarCom(armaz)
+      console.log( (salvo ? 'Salvo' : 'Não foi possível salvar') )
+    }
   }
   return {operarContinuamente,ajuda}
 }
