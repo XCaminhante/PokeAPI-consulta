@@ -228,6 +228,7 @@ main()
 //   | base feita, falta testar e implementar na interface
 // 
 // - | mostrar relações de dano à partir do pokemon consultado
+//   | base incompleta
 // 
 // - | separar classes em arquivos
 // 
