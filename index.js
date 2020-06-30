@@ -222,3 +222,14 @@ async function main () {
   _c.operarContinuamente()
 }
 main()
+// Para fazer:
+// 
+// - | descrever as habilidades
+//   | base feita, falta testar e implementar na interface
+// 
+// - | mostrar relações de dano à partir do pokemon consultado
+// 
+// - | separar classes em arquivos
+// 
+// - | exemplos de pokemon com o mesmo tipo deste
+//   | base testada, falta implementar na interface
