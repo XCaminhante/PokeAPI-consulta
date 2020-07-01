@@ -93,7 +93,7 @@ function HabilidadesPokemon (_dados) {
     return new HabilidadePokemon(dadosHab[0].ability)
   }
   function toString () { return nomes().join(', ') }
-  return {nomes,toString}
+  return {nomes,habilidade,toString}
 }
 function RelacoesDanosPokemon (_dados) {
   function listaResParaTipos (listaNamedRes) {
@@ -223,9 +223,29 @@ function ConsolePokemon () {
     console.log( ( armaz.apagar(nome) ? 'Feito' : 'Houve um problema' ) )
   }
   // Auxiliares:
-  function descreverHabilidades (pokemon) {}
-  function relacoesDano (pokemon) {}
+  async function descreverHabilidades (pokemon) {
+    var hs = pokemon.habilidades()
+    var nomes = hs.nomes()
+    var lhs = {}
+    for (var n in nomes) {
+      lhs[nomes[n]] = (await hs.habilidade( nomes[n] )).descricao()
+    }
+    return lhs
+  }
   function exemplosTipo (tipo) {}
+  async function relacoesDano (pokemon) {
+    var ts = pokemon.tipos()
+    var nomes = ts.nomes()
+    lrd = {}
+    for (var n in nomes) {
+      var reld = (await ts.tipo( nomes[n] )).relacoesDanos()
+      lrd[nomes[n]] = {
+        de:   { sem: reld.semDanoDe().nomes(),    meio: reld.meioDanoDe().nomes(),    duplo: reld.duploDanoDe().nomes() },
+        para: { sem: reld.semDanoPara().nomes(),  meio: reld.meioDanoPara().nomes(),  duplo: reld.duploDanoPara().nomes() },
+      }
+    }
+    return lrd
+  }
   function talvezSalvar (pokemon) {
     if (!armaz.contem(pokemon.nome())) {
       if (!rs.keyInYNStrict('Salvar?',{guide:true})) {return}
