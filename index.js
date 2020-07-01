@@ -96,12 +96,31 @@ function HabilidadesPokemon (_dados) {
   return {nomes,toString}
 }
 function RelacoesDanosPokemon (_dados) {
-  function semDanoPara () {}
-  function meioDanoPara () {}
-  function duploDanoPara () {}
-  function semDanoDe () {}
-  function meioDanoDe () {}
-  function duploDanoDe () {}
+  function listaResParaTipos (listaNamedRes) {
+    return listaNamedRes.map( (n,i) => ({slot:i, type:n}) )
+  }
+  function semDanoPara () {
+    return new TiposPokemon( listaResParaTipos(_dados.no_damage_to) )
+  }
+  function meioDanoPara () {
+    return new TiposPokemon( listaResParaTipos(_dados.half_damage_to) )
+  }
+  function duploDanoPara () {
+    return new TiposPokemon( listaResParaTipos(_dados.double_damage_to) )
+  }
+  function semDanoDe () {
+    return new TiposPokemon( listaResParaTipos(_dados.no_damage_from) )
+  }
+  function meioDanoDe () {
+    return new TiposPokemon( listaResParaTipos(_dados.half_damage_from) )
+  }
+  function duploDanoDe () {
+    return new TiposPokemon( listaResParaTipos(_dados.double_damage_from) )
+  }
+  function print () {
+    for (var i in _dados) console.log(i,_dados[i])
+  }
+  return {semDanoPara,meioDanoPara,duploDanoPara,semDanoDe,meioDanoDe,duploDanoDe,print}
 }
 // Entidades:
 function Pokemon (_dados) {
@@ -228,7 +247,7 @@ main()
 //   | base feita, falta testar e implementar na interface
 // 
 // - | mostrar relações de dano à partir do pokemon consultado
-//   | base incompleta
+//   | base testada, falta implementar na interface
 // 
 // - | separar classes em arquivos
 // 
